@@ -1,8 +1,10 @@
+from turtle import title
 from django.urls import path
 
 from . import views
-
+app_name = "encyclopedia"
 urlpatterns = [
-    path("", views.index, name="index")
-    #i dont know
+    path("", views.index, name="index"),
+    path("wiki/<str:title>", views.title, name = "article"),
+    path("result", views.result, name="result")
 ]

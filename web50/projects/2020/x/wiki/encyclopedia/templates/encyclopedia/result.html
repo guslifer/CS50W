@@ -1,0 +1,15 @@
+{% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+
+{%block body%}
+<h1> This is a result list </h1>
+<ul>
+    {% for result in results %}
+    <li>
+        <a href="/wiki/{{ result }}"> {{ result }} </a>  
+    </li>
+    {% endfor %}
+</ul>
+
+{%endblock%}
