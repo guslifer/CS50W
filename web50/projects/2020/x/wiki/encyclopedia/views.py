@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from . import util
-from django.http import HttpResponse, HttpResponseNotFound,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound,HttpResponseRedirect, HttpResponseBadRequest
 
 
 def index(request):
@@ -35,5 +35,22 @@ def title(request, title):
 
 def result(request):
     return HttpResponseNotFound("<h1> 404 - Page not found </h1")
+
+def newpage(request):
+    if(request.method == "POST"):
+        #test if the user send an name and an article writed
+        if(len(request.POST["articletext"]) > 0 and len(request.POST["name"]) > 0):
+            name = request.POST["name"]
+            article = request.POST["articletext"]
+            entries = util.list_entries()
+            entries_lower = [temp.lower() for temp in entries]
+            if(name.lower() in entries_lower):
+                return HttpResponseBadRequest("Bad request, Bro")
+            else:
+                util.save_entry(name, article)
+                return redirect(reverse('encyclopedia:article', kwargs= {'title':name}))
+            
+    
+    return render(request, "encyclopedia/newpage.html")
     
 

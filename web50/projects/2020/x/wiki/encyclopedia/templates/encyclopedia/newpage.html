@@ -1,0 +1,27 @@
+{% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+{%block body%}
+    <div class = "row justify-content-md-center mt-5"> 
+        <h3> Create a New Article! </h3>
+    </div>
+<div class="container">
+    <form action="{% url 'encyclopedia:newpage' %}" method="post">
+        {% csrf_token %}
+        <div class="row  ml-5 mr-5 mt-5">
+            <label for"name"> Article Name: </label>
+            <input class = "ml-2" type="text" name="name" id="name">
+        </div> 
+        <div class="row  ml-5 mr-5 mt-5">
+            <label for="articletext">Enter the Markdown text of your article:</label>
+            <textarea class="form-control justify-content-md-center" id="articletext" name="articletext" rows="15"></textarea>   
+        </div>
+        <div class="row ml-5 mr-5 mt-5 justify-content-end">
+            <div>
+                <button type="submit" class="btn btn-info" style="width:100px">Create!</button>
+            </div>  
+        <div>
+    </form>
+</div>
+
+{%endblock%}
