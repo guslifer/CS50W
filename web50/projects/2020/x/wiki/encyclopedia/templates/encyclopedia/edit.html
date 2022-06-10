@@ -1,0 +1,22 @@
+{% extends "encyclopedia/layout.html"%}
+{% load static %}
+
+{%block body%}
+<div class = "row justify-content-md-center mt-5"> 
+    <h3> Editing the Article: {{title}} </h3>
+</div>
+<div class="container">
+<form action="{% url 'encyclopedia:edit' title %}" method="post">
+    {% csrf_token %}
+    <div class="row  ml-5 mr-5 mt-5">
+        <label for="articletext">Enter the Markdown text modification of your article:</label>
+        <textarea class="form-control justify-content-md-center" id="modification" name="modification" rows="15">{{entry}}</textarea>   
+    </div>
+    <div class="row ml-5 mr-5 mt-5 justify-content-end">
+        <div>
+            <button type="submit" class="btn btn-info" style="width:150px">Save Changes!</button>
+        </div>  
+    <div>
+</form>
+</div>
+{%endblock%}
