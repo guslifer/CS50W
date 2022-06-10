@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from . import util
 from django.http import HttpResponse, HttpResponseNotFound,HttpResponseRedirect, HttpResponseBadRequest
+from random import randint
 
 
 def index(request):
@@ -64,5 +65,16 @@ def edit(request, title):
     return render(request, "encyclopedia/edit.html", {
         "entry": entry , "title": title
     })
+    
+def random(request):
+    list = util.list_entries()
+    page_position = randint(0, (len(util.list_entries()))-1)
+    entry = util.get_entry(list[page_position])
+    name = list[page_position]
+    
+    return render(request, "encyclopedia/title.html", {
+        "entry": entry , "title": name
+    })
+    
 
 
