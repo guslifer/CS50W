@@ -19,7 +19,7 @@ class Listings(models.Model):
     STATUS_CHOICES = (
         (ACTIVE, 'Active'),
         (CANCELLED, 'Cancelled'),
-        (SOLD, 'Sold'),
+        (SOLD, 'Sold')
     )
     
     id = models.IntegerField(primary_key = True)
@@ -30,6 +30,8 @@ class Listings(models.Model):
     image_url = models.URLField()
     category = models.ForeignKey(Categories, related_name="listinings",on_delete=CASCADE,null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default = ACTIVE)
+    author = models.ForeignKey(User, related_name="listings",null=True,on_delete=CASCADE)
+    highest_bid = models.ForeignKey("Bids", related_name="listings", on_delete=CASCADE,null=True)
     
 
 class Bids(models.Model):
