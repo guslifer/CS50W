@@ -12,6 +12,9 @@ def index(request):
     listings = Listings.objects.filter(status=Listings.ACTIVE)
     return render(request, "auctions/index.html", {"listings": listings})
 
+def newlisting(request):
+    return render(request, "auctions/newlisting.html")
+
 
 def login_view(request):
     if request.method == "POST":
