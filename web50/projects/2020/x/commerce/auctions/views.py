@@ -4,8 +4,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+import datetime
 
-from .models import User, Listings
+from .models import User, Listings, Categories
 
 
 def index(request):
@@ -13,7 +15,22 @@ def index(request):
     return render(request, "auctions/index.html", {"listings": listings})
 
 def newlisting(request):
-    return render(request, "auctions/newlisting.html")
+    if (request.method == "POST" and request.user.is_authenticated):
+        new = Listings(
+            product_name = request.POST["product_name"],
+            category = Categories.objects.get(category = request.POST["category"]),
+            description = request.POST["description"],
+            image_url = request.POST["img_url"],
+            base_price = request.POST["base_price"],
+            status = Listings.ACTIVE,
+            author = request.user,
+            publish_date = datetime.datetime.now()
+        )
+        #need to ensure validation someday
+        new.save()
+            
+    categories = Categories.objects.all
+    return render(request, "auctions/newlisting.html", {"categories":categories})
 
 
 def login_view(request):

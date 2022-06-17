@@ -25,7 +25,7 @@ class Listings(models.Model):
     id = models.IntegerField(primary_key = True)
     product_name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
-    publish_date = models.DateTimeField(auto_now_add=True)
+    publish_date = models.DateTimeField()
     base_price = models.FloatField()
     image_url = models.URLField()
     category = models.ForeignKey(Categories, related_name="listinings",on_delete=CASCADE,null=True)
