@@ -32,6 +32,11 @@ def newlisting(request):
     categories = Categories.objects.all
     return render(request, "auctions/newlisting.html", {"categories":categories})
 
+def details(request, listing):
+    
+    categories = Categories.objects.all
+    return render(request, "auctions/details.html", {"categories":categories})
+
 
 def login_view(request):
     if request.method == "POST":

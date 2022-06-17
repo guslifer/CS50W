@@ -16,10 +16,10 @@
                 <div class = "col-auto mt-3 ">
                     {% if user.is_authenticated %}
                     Signed in as <strong>{{ user.username }}</strong>.
-                    <a type="button"  href="{% url 'logout' %}" class="btn btn-outline-secondary">Log Out</a>
+                    <a type="button"  href="{% url 'auctions:logout' %}" class="btn btn-outline-secondary">Log Out</a>
                     {% else %}
                     Not signed in.
-                    <a type="button"  href="{% url 'login' %}" class="btn btn-outline-info">Log In</a>
+                    <a type="button"  href="{% url 'auctions:login' %}" class="btn btn-outline-info">Log In</a>
                     {% endif %}
                 </div>
             </div>
@@ -29,13 +29,13 @@
                     <nav class="navbar justify-content-center" style="background-color: #F58AB6; border-radius: 15px;">
                         <ul class="nav">
                             <li class="nav-item">
-                                <a class="nav-link white-bold" href="{% url 'index' %}" >Active Listings</a>
+                                <a class="nav-link white-bold" href="{% url 'auctions:index' %}" >Active Listings</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link white-bold" href="{% url 'index' %}" >Watchlist</a>
+                                <a class="nav-link white-bold" href="{% url 'auctions:index' %}" >Watchlist</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link white-bold" href="{% url 'index' %}" >Active Listings</a>
+                                <a class="nav-link white-bold" href="{% url 'auctions:index' %}" >Active Listings</a>
                             </li>
                         </ul>
                     </nav>
