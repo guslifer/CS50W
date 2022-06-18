@@ -11,13 +11,12 @@
                     <img src={{listing.image_url}} class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">{{listing.product_name}}</h5>
-                      <p class="card-text">{{listing.description}}</p>
                     </div>
                     <ul class="list-group list-group-flush">
                       <li class="list-group-item">Price: R${{listing.base_price}} </li>
                     </ul>
                     <div class="card-body">
-                      <a href="#" class="card-link">Card link</a>
+                      <a href="{% url "auctions:details" listing.id %}" class="card-link">Details</a>
                       <a href="#" class="card-link">Another link</a>
                     </div>
                   </div>

@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 import datetime
+from .services import *
 
 from .models import User, Listings, Categories
 
@@ -32,10 +33,10 @@ def newlisting(request):
     categories = Categories.objects.all
     return render(request, "auctions/newlisting.html", {"categories":categories})
 
-def details(request, listing):
-    
-    categories = Categories.objects.all
-    return render(request, "auctions/details.html", {"categories":categories})
+def details(request, listing_id):
+    highest_bid(listing_id)
+    listing = Listings.objects.get(id=listing_id)
+    return render(request, "auctions/details.html", {"listing":listing})
 
 
 def login_view(request):
