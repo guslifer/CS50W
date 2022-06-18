@@ -6,49 +6,66 @@
     <div class="row justify-content-center mt-5 mb-3" style="text-align:center">
         <h5> Details </h5>
     </div>
-    <form action="{% url 'auctions:newlisting' %}" method="post">
-      {% csrf_token %}
-      <fieldset disabled>
-      <div class = "row justify-content-start ">
+      <div class = "row justify-content-center ">
           <div class="col-4 mt-3">
                 <div class="mb-1 mt-2">
-                  <img src="{{listing.image_url}}" class="img-thumbnail" alt="...">
+                  <img src="{{listing.image_url}}" class="img-thumbnail rounded mx-auto d-block" alt="..." >
                 </div>
+                {% if user.is_authenticated and user == listing.author %}
+                <div class = "row justify-content-center mt-3 ">
+                  <div class = "col text-center ">
+                    <button class="btn btn-success " type="submit">Close Auction</button>
+                  </div>
+                </div>
+                {% elif user.is_authenticated %}
+                    <form>
+                        <div class = "row justify-content-center mt-3 ">
+                              <div class = "col-8">
+                                  <label for = "new_bid"> Bid Value</label>
+                                  <input class="form-control" name= "new_bid" id = "new_bid" type="number" placeholder="U$ 0.00" aria-label="default input example" value = {{listing.product_name}} required>
+                              </div>
+                              <div class="col-4 mt-3 mb-3">
+                                  <button class="btn btn-light " type="submit">Make a Bid</button>
+                              </div>
+                        </div>
+                    </form>
+                {%endif%}
           </div>
           <div class = "col-8 mt-3">
-            <div class="mb-1">
-              <label for = "product_name"> Product's name</label>
-              <input class="form-control" name= "product_name" id = "product_name" type="text" placeholder="Name" aria-label="default input example" value = {{listing.product_name}} required>
-            </div>
+            <form action="{% url 'auctions:newlisting' %}" method="post">
+              <fieldset disabled>
+                <div class="mb-1">
+                  <label for = "product_name"> Product's name</label>
+                  <input class="form-control" name= "product_name" id = "product_name" type="text" placeholder="Name" aria-label="default input example" value = {{listing.product_name}} required>
+                </div>
 
-            <div class="mb-1">
-              <label for = "description"> Description </label>
-              <textarea class="form-control" name="description" id="description" rows="7" required>{{listing.description}}</textarea>  
-            </div>
+                <div class="mb-1">
+                  <label for = "description"> Description </label>
+                  <textarea class="form-control" name="description" id="description" rows="7" required>{{listing.description}}</textarea>  
+                </div>
 
-            <div class="mb-1">
-              <label for = "category"> Category </label>
-              <input class="form-control" name= "product_name" id = "category" type="text" placeholder="category" aria-label="default input example" value = {{listing.category}} required>
-            </div>
+                <div class="mb-1">
+                  <label for = "category"> Category </label>
+                  <input class="form-control" name= "product_name" id = "category" type="text" placeholder="category" aria-label="default input example" value = {{listing.category}} required>
+                </div>
 
-            <div class="mb-1">
-              <label for = "publish_date"> Publish Date </label>
-              <input class="form-control" name= "product_name" id = "publish_date" type="text" placeholder="-" aria-label="default input example" value = "{{listing.publish_date|date:"D d M Y" }} {{listing.publish_date|time:"H:i" }}" required>
-            </div>
+                <div class="mb-1">
+                  <label for = "publish_date"> Publish Date </label>
+                  <input class="form-control" name= "product_name" id = "publish_date" type="text" placeholder="-" aria-label="default input example" value = "{{listing.publish_date|date:"D d M Y" }} {{listing.publish_date|time:"H:i" }}" required>
+                </div>
 
-            <div class="mb-1">
-              <label for = "author"> Author</label>
-              <input class="form-control" name= "author" id = "author" type="text" placeholder="-" aria-label="default input example" value = {{listing.author}} required>
-            </div>
+                <div class="mb-1">
+                  <label for = "author"> Author</label>
+                  <input class="form-control" name= "author" id = "author" type="text" placeholder="-" aria-label="default input example" value = {{listing.author}} required>
+                </div>
 
-            <div class="mb-1">
-              <label for = "highest_bid"> Highest Bid </label>
-              <input class="form-control" name= "highest_bid" id = "highest_bid" type="text" placeholder="-" aria-label="default input example" value = {{listing.highest_bid}} required>
-            </div>
-
+                <div class="mb-5">
+                  <label for = "highest_bid"> Highest Bid </label>
+                  <input class="form-control" name= "highest_bid" id = "highest_bid" type="text" placeholder="-" aria-label="default input example" value = {{listing.highest_bid}} required>
+                </div>
+              </fieldset>
+            </form>
           </div>
-        </div>
-      <fieldset>
-    </form>
+        </div>    
 </div>
 {%endblock%}
