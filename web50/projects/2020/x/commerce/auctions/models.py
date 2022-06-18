@@ -28,20 +28,20 @@ class Listings(models.Model):
     publish_date = models.DateTimeField()
     base_price = models.FloatField()
     image_url = models.URLField()
-    category = models.ForeignKey(Categories, related_name="listinings",on_delete=CASCADE,null=True)
+    category = models.ForeignKey(Categories, related_name="listinings",on_delete=models.CASCADE,null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default = ACTIVE)
-    author = models.ForeignKey(User, related_name="listings",null=True,on_delete=CASCADE)
-    highest_bid = models.ForeignKey("Bids", related_name="listings", on_delete=CASCADE,null=True)
+    author = models.ForeignKey(User, related_name="listings",null=True,on_delete=models.CASCADE)
+    highest_bid = models.ForeignKey("Bids", related_name="listings", on_delete=models.CASCADE,null=True)
     
 
 class Bids(models.Model):
     id = models.IntegerField(primary_key = True)
     price = models.FloatField()
-    author = models.ForeignKey(User, related_name="bids", on_delete=CASCADE,null=True)
+    author = models.ForeignKey(User, related_name="bids", on_delete=models.CASCADE,null=True)
     
 class Comments(models.Model):
     comment = models.CharField(max_length=500)
-    author = models.ForeignKey(User, related_name="comments",null=True,on_delete=CASCADE)
+    author = models.ForeignKey(User, related_name="comments",null=True,on_delete=models.CASCADE)
     
     
 
