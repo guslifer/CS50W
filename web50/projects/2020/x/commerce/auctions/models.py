@@ -41,7 +41,7 @@ class Bids(models.Model):
     id = models.IntegerField(primary_key = True)
     price = models.FloatField()
     author = models.ForeignKey(User, related_name="bids", on_delete=models.CASCADE,null=True)
-    listining = models.ForeignKey(Listings, related_name="bids", on_delete=models.CASCADE,null=True)
+    listing = models.ForeignKey(Listings, related_name="bids", on_delete=models.CASCADE,null=True)
 
     def __str__(self):
         return f"U${self.price} by {self.author}"

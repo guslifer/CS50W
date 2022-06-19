@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 import datetime
 from .services import *
+from django.views.decorators.cache import never_cache
 
 from .models import User, Listings, Categories
 
@@ -33,10 +34,27 @@ def newlisting(request):
     categories = Categories.objects.all
     return render(request, "auctions/newlisting.html", {"categories":categories})
 
+@never_cache
 def details(request, listing_id):
-    highest_bid(listing_id)
     listing = Listings.objects.get(id=listing_id)
-    return render(request, "auctions/details.html", {"listing":listing})
+    actual_price = highest_bid(listing_id)
+    if request.method == "POST":
+        if "close_auction" in request.POST:
+            listing.status = Listings.SOLD
+            listing.save()
+            
+        if request.POST["make_bid"] and request.user.is_authenticated:
+            if (listing.status == Listings.ACTIVE):
+                if (float(request.POST["new_bid"]) > actual_price):
+                    new_bid = Bids(author = request.user, price = request.POST["new_bid"], listing = listing)
+                    new_bid.save()
+                    highest_bid(listing_id)
+                    listing.refresh_from_db()
+                    return render(request, "auctions/details.html", {"listing":listing, "message": "Bid made!"})
+                else: 
+                    return render(request, "auctions/details.html", {"listing":listing, "message": "Bid too little"})
+
+    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price})
 
 
 def login_view(request):

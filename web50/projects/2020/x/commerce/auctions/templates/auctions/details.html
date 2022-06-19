@@ -2,6 +2,9 @@
 {%load static %}
 
 {%block body%}
+{% if message %}
+<h1>{{message}}</h1>
+{%endif%}
 <div class = "container">
     <div class="row justify-content-center mt-5 mb-3" style="text-align:center">
         <h5> Details </h5>
@@ -12,20 +15,24 @@
                   <img src="{{listing.image_url}}" class="img-thumbnail rounded mx-auto d-block" alt="..." >
                 </div>
                 {% if user.is_authenticated and user == listing.author %}
-                <div class = "row justify-content-center mt-3 ">
-                  <div class = "col text-center ">
-                    <button class="btn btn-success " type="submit">Close Auction</button>
+                <form  action="{% url "auctions:details" listing.id %}" method="POST">
+                  {% csrf_token %}
+                  <div class = "row justify-content-center mt-3 ">
+                    <div class = "col text-center ">
+                      <button class="btn btn-success" name="close_auction" value="True" type="submit">Close Auction</button>
+                    </div>
                   </div>
-                </div>
+                </form>
                 {% elif user.is_authenticated %}
-                    <form>
+                    <form action="{% url "auctions:details" listing.id %}" method="POST">
+                      {% csrf_token %}
                         <div class = "row justify-content-center mt-3 ">
                               <div class = "col-8">
                                   <label for = "new_bid"> Bid Value</label>
-                                  <input class="form-control" name= "new_bid" id = "new_bid" type="number" placeholder="U$ 0.00" aria-label="default input example" value = {{listing.product_name}} required>
+                                  <input class="form-control"  min="0.01" step="0.01" name= "new_bid" id = "new_bid" type="number" placeholder="U$ 0.00" aria-label="default input example" value = {{listing.product_name}} required>
                               </div>
                               <div class="col-4 mt-3 mb-3">
-                                  <button class="btn btn-light " type="submit">Make a Bid</button>
+                                  <button class="btn btn-light " type="submit" value = "True" name="make_bid">Make a Bid</button>
                               </div>
                         </div>
                     </form>
@@ -61,7 +68,7 @@
 
                 <div class="mb-5">
                   <label for = "highest_bid"> Highest Bid </label>
-                  <input class="form-control" name= "highest_bid" id = "highest_bid" type="text" placeholder="-" aria-label="default input example" value = {{listing.highest_bid}} required>
+                  <input class="form-control" name= "highest_bid" id = "highest_bid" type="text" placeholder="-" aria-label="default input example" value = {{actual_price}} required>
                 </div>
               </fieldset>
             </form>
