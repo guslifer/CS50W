@@ -1,19 +1,22 @@
 {% extends "auctions/layout.html" %}
+{%load get_item%}
 
 {% block body %}
+{% if message %}
+<h1>{{message}}</h1>
+{%endif%}
     <h2 class = "white-bold" style = "text-align:center">Active Listings</h2>
     <div class="container">
         <div class="row justify-content-start">
             {%for listing in listings%}
             <div class = "col-auto">
-
                 <div class="card" style="width: 18rem;">
-                    <img src={{listing.image_url}} class="card-img-top" alt="...">
+                    <img src={{listing.image_url}} class="card-img-top img-fluid" alt="...">
                     <div class="card-body">
                       <h5 class="card-title">{{listing.product_name}}</h5>
                     </div>
                     <ul class="list-group list-group-flush">
-                      <li class="list-group-item">Price: R${{listing.base_price}} </li>
+                      <li class="list-group-item">Price: R${{actual_price|get_item:listing.id}} </li>
                     </ul>
                     <div class="card-body">
                       <a href="{% url "auctions:details" listing.id %}" class="card-link">Details</a>

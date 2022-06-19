@@ -13,8 +13,12 @@ from .models import User, Listings, Categories
 
 
 def index(request):
+    actual_price ={}
     listings = Listings.objects.filter(status=Listings.ACTIVE)
-    return render(request, "auctions/index.html", {"listings": listings})
+    for listing in listings:
+        actual_price[listing.id] = highest_bid(listing.id)
+
+    return render(request, "auctions/index.html", {"listings": listings, "actual_price":actual_price})
 
 def newlisting(request):
     if (request.method == "POST" and request.user.is_authenticated):
@@ -50,10 +54,9 @@ def details(request, listing_id):
                     new_bid.save()
                     highest_bid(listing_id)
                     listing.refresh_from_db()
-                    return render(request, "auctions/details.html", {"listing":listing, "message": "Bid made!"})
+                    return HttpResponseRedirect(reverse("auctions:index"))
                 else: 
-                    return render(request, "auctions/details.html", {"listing":listing, "message": "Bid too little"})
-
+                    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little"})
     return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price})
 
 
