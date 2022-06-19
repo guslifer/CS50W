@@ -42,12 +42,13 @@ def newlisting(request):
 def details(request, listing_id):
     listing = Listings.objects.get(id=listing_id)
     actual_price = highest_bid(listing_id)
+    user = User.objects.get(username = request.user.username)
     if request.method == "POST":
         if "close_auction" in request.POST:
             listing.status = Listings.SOLD
             listing.save()
             
-        if request.POST["make_bid"] and request.user.is_authenticated:
+        if "make_bid" in request.POST and request.user.is_authenticated:
             if (listing.status == Listings.ACTIVE):
                 if (float(request.POST["new_bid"]) > actual_price):
                     new_bid = Bids(author = request.user, price = request.POST["new_bid"], listing = listing)
@@ -57,6 +58,15 @@ def details(request, listing_id):
                     return HttpResponseRedirect(reverse("auctions:index"))
                 else: 
                     return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little"})
+
+        if "watchlist" in request.POST and request.user.is_authenticated:
+            if user.watchlist.filter(id=listing_id).exists():
+                user.watchlist.remove(listing)
+            else:
+                user.watchlist.add(listing)
+            user.save()
+            return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "a massage"})
+            
     return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price})
 
 

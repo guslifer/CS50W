@@ -6,6 +6,7 @@ from django.forms import CharField, DateTimeField, FloatField, IntegerField
 
 
 class User(AbstractUser):
+    watchlist = models.ManyToManyField("Listings")
     pass
 
 class Categories(models.Model):

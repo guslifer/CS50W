@@ -1,6 +1,6 @@
 {% extends 'auctions/layout.html' %}
 {%load static %}
-{%load get_item%}
+
 
 {%block body%}
 {% if message %}
@@ -8,7 +8,16 @@
 {%endif%}
 <div class = "container">
     <div class="row justify-content-center mt-5 mb-3" style="text-align:center">
+      <div class= "col-2 justify-content-end">
         <h5> Details </h5>
+      </div>
+      <div class= "col-2 justify-content-start">
+        <form action="{% url "auctions:details" listing.id %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-success" name="watchlist" value="True" type="submit">Add to Watchlist</button>
+        </form>
+      </div>
+
     </div>
       <div class = "row justify-content-center ">
           <div class="col-4 mt-3">
