@@ -12,13 +12,29 @@ from django.views.decorators.cache import never_cache
 from .models import User, Listings, Categories
 
 
-def index(request):
+def index(request, category = None):
     actual_price ={}
-    listings = Listings.objects.filter(status=Listings.ACTIVE)
+    if(category):
+        listings = Listings.objects.filter(status=Listings.ACTIVE, category__id = category)
+    else:
+        listings = Listings.objects.filter(status=Listings.ACTIVE)
     for listing in listings:
         actual_price[listing.id] = highest_bid(listing.id)
 
     return render(request, "auctions/index.html", {"listings": listings, "actual_price":actual_price})
+
+def categories(request):
+    categories = Categories.objects.all()
+    return render(request, "auctions/categories.html", {"categories": categories})
+
+def watchlist(request):
+    actual_price ={}
+    user = request.user
+    listings = user.watchlist.filter(status=Listings.ACTIVE)
+    for listing in listings:
+        actual_price[listing.id] = highest_bid(listing.id)
+
+    return render(request, "auctions/watchlist.html", {"listings": listings, "actual_price":actual_price})
 
 def newlisting(request):
     if (request.method == "POST" and request.user.is_authenticated):
@@ -62,11 +78,13 @@ def details(request, listing_id):
         if "watchlist" in request.POST and request.user.is_authenticated:
             if user.watchlist.filter(id=listing_id).exists():
                 user.watchlist.remove(listing)
+                user.save()
             else:
                 user.watchlist.add(listing)
             user.save()
-            return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "a massage"})
-            
+
+    if user.watchlist.filter(id=listing_id).exists():  
+        return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True})
     return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price})
 
 

@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+{%load get_item%}
+
+{% block body %}
+{% if message %}
+<h1>{{message}}</h1>
+{%endif%}
+    <h2 class = "white-bold" style = "text-align:center">List of Categories</h2>
+    <div class="container">
+        <div class="row justify-content-start">
+            {%for category in categories%}
+            <div class = "col-auto">
+                <ul>
+                    <li class = "white-bold"><a href="{%url "auctions:index" category.id%}">{{category}}</li>
+                </ul>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+{% endblock %}
