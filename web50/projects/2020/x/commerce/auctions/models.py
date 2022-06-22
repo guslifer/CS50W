@@ -3,6 +3,7 @@ from unicodedata import category
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.forms import CharField, DateTimeField, FloatField, IntegerField
+import datetime
 
 
 class User(AbstractUser):
@@ -48,8 +49,11 @@ class Bids(models.Model):
         return f"U${self.price} by {self.author}"
     
 class Comments(models.Model):
+    id = models.IntegerField(primary_key=True)
     comment = models.CharField(max_length=500)
     author = models.ForeignKey(User, related_name="comments",null=True,on_delete=models.CASCADE)
+    publish_date = models.DateTimeField(default=datetime.datetime.now)
+    listing = models.ForeignKey(Listings, related_name="comments", on_delete=models.CASCADE,null=True)
     
     
 

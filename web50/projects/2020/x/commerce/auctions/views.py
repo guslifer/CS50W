@@ -1,3 +1,4 @@
+from pickletools import read_unicodestring1
 from tkinter import ACTIVE
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -9,7 +10,7 @@ import datetime
 from .services import *
 from django.views.decorators.cache import never_cache
 
-from .models import User, Listings, Categories
+from .models import Comments, User, Listings, Categories
 
 
 def index(request, category = None):
@@ -59,6 +60,7 @@ def details(request, listing_id):
     listing = Listings.objects.get(id=listing_id)
     actual_price = highest_bid(listing_id)
     user = User.objects.get(username = request.user.username)
+    comments = Comments.objects.filter(listing__id = listing_id)
     if request.method == "POST":
         if "close_auction" in request.POST:
             listing.status = Listings.SOLD
@@ -73,7 +75,7 @@ def details(request, listing_id):
                     listing.refresh_from_db()
                     return HttpResponseRedirect(reverse("auctions:index"))
                 else: 
-                    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little"})
+                    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little", "comments": comments})
 
         if "watchlist" in request.POST and request.user.is_authenticated:
             if user.watchlist.filter(id=listing_id).exists():
@@ -82,10 +84,14 @@ def details(request, listing_id):
             else:
                 user.watchlist.add(listing)
             user.save()
+        if "commentary" in request.POST and request.user.is_authenticated:
+            new_comment = Comments(author = request.user, comment = request.POST["commentary"], listing = listing)
+            new_comment.save()
+            return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
 
     if user.watchlist.filter(id=listing_id).exists():  
-        return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True})
-    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price})
+        return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
+    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "comments": comments})
 
 
 def login_view(request):
