@@ -29,13 +29,16 @@ def categories(request):
     return render(request, "auctions/categories.html", {"categories": categories})
 
 def watchlist(request):
-    actual_price ={}
-    user = request.user
-    listings = user.watchlist.filter(status=Listings.ACTIVE)
-    for listing in listings:
-        actual_price[listing.id] = highest_bid(listing.id)
+    if request.user.is_authenticated:
+        actual_price ={}
+        user = request.user
+        listings = user.watchlist.filter(status=Listings.ACTIVE)
+        for listing in listings:
+            actual_price[listing.id] = highest_bid(listing.id)
 
-    return render(request, "auctions/watchlist.html", {"listings": listings, "actual_price":actual_price})
+        return render(request, "auctions/watchlist.html", {"listings": listings, "actual_price":actual_price})
+    else:
+        return render(request, "auctions/watchlist.html")
 
 def newlisting(request):
     if (request.method == "POST" and request.user.is_authenticated):
@@ -51,6 +54,7 @@ def newlisting(request):
         )
         #need to ensure validation someday
         new.save()
+    
             
     categories = Categories.objects.all
     return render(request, "auctions/newlisting.html", {"categories":categories})
@@ -59,38 +63,40 @@ def newlisting(request):
 def details(request, listing_id):
     listing = Listings.objects.get(id=listing_id)
     actual_price = highest_bid(listing_id)
-    user = User.objects.get(username = request.user.username)
     comments = Comments.objects.filter(listing__id = listing_id)
-    if request.method == "POST":
-        if "close_auction" in request.POST:
-            listing.status = Listings.SOLD
-            listing.save()
-            
-        if "make_bid" in request.POST and request.user.is_authenticated:
-            if (listing.status == Listings.ACTIVE):
-                if (float(request.POST["new_bid"]) > actual_price):
-                    new_bid = Bids(author = request.user, price = request.POST["new_bid"], listing = listing)
-                    new_bid.save()
-                    highest_bid(listing_id)
-                    listing.refresh_from_db()
-                    return HttpResponseRedirect(reverse("auctions:index"))
-                else: 
-                    return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little", "comments": comments})
+    if request.user.is_authenticated:
+        user = User.objects.get(username = request.user.username)
+        if request.method == "POST":
+            if "close_auction" in request.POST:
+                listing.status = Listings.SOLD
+                listing.save()
+                
+            if "make_bid" in request.POST and request.user.is_authenticated:
+                if (listing.status == Listings.ACTIVE):
+                    if (float(request.POST["new_bid"]) > actual_price):
+                        new_bid = Bids(author = request.user, price = request.POST["new_bid"], listing = listing)
+                        new_bid.save()
+                        highest_bid(listing_id)
+                        listing.refresh_from_db()
+                        return HttpResponseRedirect(reverse("auctions:index"))
+                    else: 
+                        return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "message": "Bid too little", "comments": comments})
 
-        if "watchlist" in request.POST and request.user.is_authenticated:
-            if user.watchlist.filter(id=listing_id).exists():
-                user.watchlist.remove(listing)
+            if "watchlist" in request.POST and request.user.is_authenticated:
+                if user.watchlist.filter(id=listing_id).exists():
+                    user.watchlist.remove(listing)
+                    user.save()
+                else:
+                    user.watchlist.add(listing)
                 user.save()
-            else:
-                user.watchlist.add(listing)
-            user.save()
-        if "commentary" in request.POST and request.user.is_authenticated:
-            new_comment = Comments(author = request.user, comment = request.POST["commentary"], listing = listing)
-            new_comment.save()
-            return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
+            if "commentary" in request.POST and request.user.is_authenticated:
+                new_comment = Comments(author = request.user, comment = request.POST["commentary"], listing = listing)
+                new_comment.save()
+                return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
 
-    if user.watchlist.filter(id=listing_id).exists():  
-        return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
+        if user.watchlist.filter(id=listing_id).exists():  
+            return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "rm_watchlist":True, "comments": comments})
+        
     return render(request, "auctions/details.html", {"listing":listing, "actual_price": actual_price, "comments": comments})
 
 
