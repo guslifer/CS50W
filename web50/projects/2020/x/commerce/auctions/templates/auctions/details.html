@@ -115,7 +115,7 @@
         {%for comment in comments%}
         <div class="card mt-3 mb-3">
           <div class="card-header d-flex">
-            <div style="font-weight: bolder;">{{comment.author}}</div> - {{listing.publish_date|date:"D d M Y" }} {{listing.publish_date|time:"H:i" }}
+            <div style="font-weight: bolder;">{{comment.author}}</div> - {{comment.publish_date|date:"D d M Y" }} {{comment.publish_date|time:"H:i" }}
           </div>
           <div class="card-body">
             <p class="card-text">{{comment.comment}}</p>
