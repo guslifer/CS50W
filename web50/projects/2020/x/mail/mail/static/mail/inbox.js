@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
-
+  // By default, load the inbox
+  load_mailbox('inbox');
+  //liten to user hitting submit button to send an email
   document.querySelector("#submit_email").addEventListener('click', () => {
     let recipients = document.getElementById("compose-recipients").value;
     let body = document.getElementById("compose-body").value;
@@ -14,8 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
 
-  // By default, load the inbox
-  load_mailbox('inbox');
   });
   
 function compose_email() {
@@ -32,7 +32,9 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  
+
+
+  get_mailboxEmais(mailbox)
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
@@ -42,10 +44,22 @@ function load_mailbox(mailbox) {
 }
 
 function send_email(c_recipient, c_subject, c_body){
+  //receives the infos about the email writed and send a POST request with Json body
   fetch('/emails', {method: 'POST', body: JSON.stringify({
     recipients: c_recipient,
     subject: c_subject,
     body: c_body })
    });
+   //redirects to 'sent' mailbox
+   load_mailbox('sent');
 
+}
+
+function get_mailboxEmais(mailbox){
+  fetch("/emails/"+mailbox)
+  .then(response => response.json())
+  .then(emails => {
+    console.log(emails);
+    console.log("NARUTO")
+  });
 }
