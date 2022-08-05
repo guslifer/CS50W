@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
 
+
   });
   
 function compose_email() {
@@ -34,13 +35,62 @@ function compose_email() {
 function load_mailbox(mailbox) {
 
 
-  get_mailboxEmais(mailbox)
+  emails = get_mailboxEmais(mailbox);
+  console.log(emails);
+
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+
+  var divAtual = document.getElementById('emails-view');
+
+  for(let i=0; i<5; i++){
+
+    let sender = emails[i]['sender'];
+    let timestamp = emails[i]['timestamp'];
+    let subject = emails[i]['subject'];
+
+
+    let container = document.createElement('div');
+    container.classList.add("card", "border-primary", "mb-3", "container");
+    let container_row1 = document.createElement('div');
+    container_row1.classList.add("card-header", "row");
+    container.appendChild(container_row1);
+
+    let row_1_col_1 = document.createElement('div');
+    row_1_col_1.classList.add("col-sm-8");
+    container_row1.appendChild(row_1_col_1);
+
+    let row_1_col1_content = document.createElement("h5");
+    row_1_col1_content.innerHTML = sender;
+    row_1_col_1.appendChild(row_1_col1_content);
+
+    let row_1_col_2 = document.createElement('div');
+    row_1_col_2.classList.add("col-sm-4");
+    container_row1.appendChild(row_1_col_2);
+
+    let row_1_col_2_content = document.createElement('p');
+    row_1_col_2_content.classList.add("card-text");
+    row_1_col_2_content.innerHTML = timestamp;
+    row_1_col_2.appendChild(row_1_col_2_content);
+
+    let row_2 = document.createElement('div');
+    row_2.classList.add("card-body", "text-primary");
+    container.appendChild(row_2);
+
+    let row_2_content = document.createElement('h5');
+    row_2_content.classList.add("card-title");
+    row_2_content.innerHTML = subject;
+    row_2.appendChild(row_2_content);
+
+    divAtual.appendChild(container);//adiciona o nó de texto à nova div criada
+  }
+    
+  
 }
 
 function send_email(c_recipient, c_subject, c_body){
@@ -60,6 +110,7 @@ function get_mailboxEmais(mailbox){
   .then(response => response.json())
   .then(emails => {
     console.log(emails);
-    console.log("NARUTO")
+    data_ = emails;
   });
+  return data_;
 }
