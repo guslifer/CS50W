@@ -58,9 +58,16 @@ function load_mailbox(mailbox) {
         let timestamp = emails[i]["timestamp"];
         let subject = emails[i]["subject"];
 
-
+      
         let container = document.createElement('div');
         container.classList.add("card", "border-primary", "mb-3", "container");
+        if(emails[i]["read"] == true){
+          container.style.backgroundColor = "#e6e6e6";
+        }
+        else{
+          container.style.backgroundColor = "white";
+        }
+        container.id = emails[i]["id"];
         let container_row1 = document.createElement('div');
         container_row1.classList.add("card-header", "row");
         container.appendChild(container_row1);
@@ -83,14 +90,25 @@ function load_mailbox(mailbox) {
         row_1_col_2.appendChild(row_1_col_2_content);
 
         let row_2 = document.createElement('div');
-        row_2.classList.add("card-body", "text-primary");
+        row_2.classList.add("card-body", "text-primary", "row");
         container.appendChild(row_2);
 
         let row_2_content = document.createElement('h5');
-        row_2_content.classList.add("card-title");
+        row_2_content.classList.add("card-title", "col-sm-10");
         row_2_content.innerHTML = subject;
         row_2.appendChild(row_2_content);
 
+        let row_2_button = document.createElement('button');
+        row_2_button.classList.add("col-sm-2", "btn", "btn-sm" ,"btn-outline-primary");
+        row_2_button.id = emails[i]["id"];
+        row_2_button.innerHTML = "View Email";
+        //trigger to read email, passing email id as parameter
+        row_2_button.addEventListener('click', function () {read_email(container, this.id, emails[i]);});
+        row_2.appendChild(row_2_button);
+        
+
+
+        
         divAtual.appendChild(container);//adiciona o nó de texto à nova div criada
     }
   } 
@@ -111,8 +129,65 @@ function send_email(c_recipient, c_subject, c_body){
 
 }
 
+//colect emails from mailbox and return a promisse with a Json object as result
 async function get_mailboxEmails(mailbox){
   let get_mails = await fetch("/emails/"+mailbox);
   response = await get_mails.json();
   return response;
+}
+
+function read_email(container, email_id, email){
+    var modalWrap = null;
+    teste = "ID: "+ email_id;
+    modalWrap = document.createElement('div');
+    
+    //creates the modal that will use to read the email
+    modalWrap.innerHTML = `
+    <div class="modal" tabindex="-1" role="dialog" id='modal_${email_id}'>
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+            <div class = "container">
+                <div class="row"> 
+                  <p class="col-sm-7">from:${email["sender"]} </p>
+                  <p class="col-sm-5">${email["timestamp"]}</p>
+                </div>
+                <div class="row"> 
+                  <h5 class="modal-title">${email["subject"]}</h5>
+                </div>
+            </div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>${email["body"]}</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Answer</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    `;
+   document.body.append(modalWrap);
+   id = '#'+'modal_' + email_id;
+   //update the email container after user viewed email
+   $(id).on('hidden.bs.modal', function () {
+    container.style.backgroundColor = "#e6e6e6";
+   });
+   //open email as a modal
+   $(id).modal('show').on("shown.bs.modal", function () {                
+});
+
+
+  //updated email status as read
+   fetch('/emails/'+ String(email["id"]), {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  });
+
 }
