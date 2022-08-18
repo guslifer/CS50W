@@ -164,7 +164,7 @@ function read_email(container, email_id, email){
               <p>${email["body"]}</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" id = "button_archive${email["id"]}"data-dismiss="modal">Archive</button>
               <button type="button" class="btn btn-primary">Answer</button>
             </div>
           </div>
@@ -173,6 +173,7 @@ function read_email(container, email_id, email){
     `;
    document.body.append(modalWrap);
    id = '#'+'modal_' + email_id;
+   buttonA_id = "#" + "button_archive" + email["id"];
    //update the email container after user viewed email
    $(id).on('hidden.bs.modal', function () {
     container.style.backgroundColor = "#e6e6e6";
@@ -180,6 +181,16 @@ function read_email(container, email_id, email){
    //open email as a modal
    $(id).modal('show').on("shown.bs.modal", function () {                
 });
+  document.querySelector(buttonA_id).addEventListener("click", () => {
+    alert(buttonA_id)
+    fetch('/emails/'+ String(email["id"]), {
+      method: 'PUT',
+      body: JSON.stringify({
+          archived: true
+      })
+    });
+  
+  });
 
 
   //updated email status as read
