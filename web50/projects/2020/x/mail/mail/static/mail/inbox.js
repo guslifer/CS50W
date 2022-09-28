@@ -137,9 +137,14 @@ async function get_mailboxEmails(mailbox){
 }
 
 function read_email(container, email_id, email){
+  //runs the routine when an emails is readed
     var modalWrap = null;
+    var archive_name = "Archive";
     teste = "ID: "+ email_id;
     modalWrap = document.createElement('div');
+    if(email["archived"] == true){
+      archive_name = "Unarchive";
+    }
     
     //creates the modal that will use to read the email
     modalWrap.innerHTML = `
@@ -164,7 +169,7 @@ function read_email(container, email_id, email){
               <p>${email["body"]}</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" id = "button_archive${email["id"]}"data-dismiss="modal">Archive</button>
+              <button type="button" class="btn btn-secondary" id = "button_archive${email["id"]}"data-dismiss="modal">${archive_name}</button>
               <button type="button" class="btn btn-primary">Answer</button>
             </div>
           </div>
@@ -181,17 +186,32 @@ function read_email(container, email_id, email){
    //open email as a modal
    $(id).modal('show').on("shown.bs.modal", function () {                
 });
-  document.querySelector(buttonA_id).addEventListener("click", () => {
-    alert(buttonA_id)
-    fetch('/emails/'+ String(email["id"]), {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: true
-      })
-    });
-  
-  });
 
+ //updated email status as (un)archived
+  document.querySelector(buttonA_id).addEventListener("click", () => {
+    if(archive_name === "Archive"){
+      fetch('/emails/'+ String(email["id"]), {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: true
+        })
+      });
+      //redirects to 'inbox' mailbox
+      location.reload();
+      load_mailbox('inbox');
+    }
+    else{
+      fetch('/emails/'+ String(email["id"]), {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: false
+        })
+      });
+      //redirects to 'inbox' mailbox
+      location.reload();
+      load_mailbox('inbox');
+    }
+  });
 
   //updated email status as read
    fetch('/emails/'+ String(email["id"]), {
