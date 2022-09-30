@@ -19,16 +19,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
   });
   
-function compose_email() {
+function compose_email(email_body, email_sender, email_recipients, email_subject, email_timestamp) {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
+  if(email_body === undefined){
+    document.querySelector('#compose-body').value = '';
+  }
+  else{
+    email_body = "On " + email_timestamp + " " + email_sender + " wrotes: " + "\n" + email_body + "\n";
+    document.querySelector('#compose-body').value = email_body;
+  }
+
+  if(email_sender === undefined){
+    document.querySelector('#compose-recipients').value = '';
+  }
+  else{
+    document.querySelector('#compose-recipients').value = email_sender + "," + email_recipients;
+  }
+  
+  if(email_subject === undefined){
+    document.querySelector('#compose-subject').value = '';
+  }
+  else{
+    document.querySelector('#compose-subject').value = email_subject;
+  }
+
   // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
+  
+  
   
 }
 
@@ -170,7 +191,7 @@ function read_email(container, email_id, email){
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" id = "button_archive${email["id"]}"data-dismiss="modal">${archive_name}</button>
-              <button type="button" class="btn btn-primary">Answer</button>
+              <button type="button" class="btn btn-primary" id = "button_reply${email["id"]}"data-dismiss="modal">Reply</button>
             </div>
           </div>
         </div>
@@ -179,6 +200,7 @@ function read_email(container, email_id, email){
    document.body.append(modalWrap);
    id = '#'+'modal_' + email_id;
    buttonA_id = "#" + "button_archive" + email["id"];
+   buttonR_id = "#" + "button_reply" + email["id"];
    //update the email container after user viewed email
    $(id).on('hidden.bs.modal', function () {
     container.style.backgroundColor = "#e6e6e6";
@@ -211,6 +233,12 @@ function read_email(container, email_id, email){
       location.reload();
       load_mailbox('inbox');
     }
+  });
+
+ //reply for an email, using compose section
+ document.querySelector(buttonR_id).addEventListener("click", () => {
+    //redirects to 'compose' section
+    compose_email(email["body"], email["sender"], email["recipients"], email["subject"], email["timestamp"]);
   });
 
   //updated email status as read
